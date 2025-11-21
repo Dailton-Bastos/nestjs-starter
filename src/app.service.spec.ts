@@ -11,7 +11,7 @@ describe("AppService", () => {
 				{
 					provide: AppService,
 					useValue: {
-						getHello: jest.fn(),
+						health: jest.fn(),
 					},
 				},
 			],
@@ -20,7 +20,19 @@ describe("AppService", () => {
 		appService = module.get<AppService>(AppService);
 	});
 
-	it("should be defined", () => {
-		expect(appService).toBeDefined();
+	describe("health", () => {
+		it("should return status ok and timestamp", () => {
+			const health = {
+				status: "ok",
+				timestamp: expect.any(Date),
+			};
+
+			jest.spyOn(appService, "health").mockReturnValue(health);
+
+			const result = appService.health();
+
+			expect(result).toEqual(health);
+			expect(appService.health).toHaveBeenCalledTimes(1);
+		});
 	});
 });
