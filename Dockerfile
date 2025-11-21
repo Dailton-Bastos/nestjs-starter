@@ -22,11 +22,27 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# [optional] tests & build
-ENV NODE_ENV=production
-RUN bun run build
-
 # run the app
-USER bun
+ENV NODE_ENV=development\
+    PORT=3000
+
 EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "start:dev" ]
+
+RUN bun test
+RUN bun run build
+
+# copy production dependencies and source code into final image
+FROM node:24.11.1-slim AS production
+
+WORKDIR /usr/src/dist
+
+COPY --from=install /temp/prod/node_modules node_modules
+COPY --from=prerelease /usr/src/app/dist .
+
+ENV NODE_ENV=production\
+    PORT=3001
+
+EXPOSE 3001/tcp
+
+CMD ["node", "main"]
