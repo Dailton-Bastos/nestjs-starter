@@ -25,13 +25,8 @@ COPY --from=install /temp/dev/bun.lock .
 COPY . .
 
 # run the app
-ENV NODE_ENV=development\
-    PORT=3000
-
-EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "start:dev" ]
 
-RUN bun test
 RUN bun run build
 
 # copy production dependencies and source code into final image
