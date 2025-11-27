@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 AS base
+FROM node:24.11.1 AS base
 
 WORKDIR /usr/src/app
 
@@ -9,37 +9,32 @@ WORKDIR /usr/src/app
 FROM base AS install
 RUN mkdir -p /temp/dev
 COPY package.json /temp/dev/
-RUN cd /temp/dev && bun install
+RUN cd /temp/dev && yarn install
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
 COPY package.json /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+RUN cd /temp/prod && yarn install --frozen-lockfile --production
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
-RUN apt-get update && apt-get install -y curl
+# RUN apt-get update && apt-get install -y curl
 COPY --from=install /temp/dev/node_modules node_modules
-COPY --from=install /temp/dev/bun.lock .
+COPY --from=install /temp/dev/yarn.lock .
 COPY . .
 
 # run the app
-ENTRYPOINT [ "bun", "run", "start:dev" ]
+ENTRYPOINT [ "yarn", "start:dev" ]
 
-RUN bun run build
+RUN yarn build
 
 # copy production dependencies and source code into final image
 FROM node:24.11.1-slim AS production
 
-WORKDIR /usr/src/dist
+WORKDIR /usr/src/app
 
 COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app/dist .
+COPY --from=prerelease /usr/src/app/dist dist
 
-ENV NODE_ENV=production\
-    PORT=3001
-
-EXPOSE 3001/tcp
-
-CMD ["node", "main"]
+CMD ["node", "dist/main"]
