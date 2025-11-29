@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM node:24.11.1 AS base
+FROM node:22.21.1 AS base
 
 WORKDIR /usr/src/app
 
@@ -19,7 +19,6 @@ RUN cd /temp/prod && yarn install --frozen-lockfile --production
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
-# RUN apt-get update && apt-get install -y curl
 COPY --from=install /temp/dev/node_modules node_modules
 COPY --from=install /temp/dev/yarn.lock .
 COPY . .
@@ -38,3 +37,11 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/dist dist
 
 CMD ["node", "dist/main"]
+
+# test Stage
+FROM base AS test
+COPY --from=install /temp/dev/node_modules node_modules
+COPY --from=install /temp/dev/yarn.lock .
+COPY . .
+
+CMD ["yarn", "test:cov"]
