@@ -29,7 +29,7 @@ ENTRYPOINT [ "yarn", "start:dev" ]
 RUN yarn build
 
 # copy production dependencies and source code into final image
-FROM node:24.11.1-slim AS production
+FROM node:22.21.1-slim AS production
 
 WORKDIR /usr/src/app
 
