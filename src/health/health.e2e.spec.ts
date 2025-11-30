@@ -3,15 +3,14 @@ import { HttpStatus } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { HealthModule } from './health.module'
 
-import { AppModule } from './app.module'
-
-describe('AppE2E', () => {
+describe('HealthE2E', () => {
 	let app: INestApplication
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [AppModule]
+			imports: [HealthModule]
 		}).compile()
 
 		app = module.createNestApplication()

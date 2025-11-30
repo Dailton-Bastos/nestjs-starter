@@ -1,15 +1,15 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { AppService } from './app.service'
+import { HealthService } from './health.service'
 
-describe('AppService', () => {
-	let appService: AppService
+describe('HealthService', () => {
+	let healthService: HealthService
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AppService,
+					provide: HealthService,
 					useValue: {
 						health: jest.fn()
 					}
@@ -17,7 +17,7 @@ describe('AppService', () => {
 			]
 		}).compile()
 
-		appService = module.get<AppService>(AppService)
+		healthService = module.get<HealthService>(HealthService)
 	})
 
 	describe('health', () => {
@@ -27,12 +27,12 @@ describe('AppService', () => {
 				timestamp: expect.any(Date)
 			}
 
-			jest.spyOn(appService, 'health').mockReturnValue(health)
+			jest.spyOn(healthService, 'health').mockReturnValue(health)
 
-			const result = appService.health()
+			const result = healthService.health()
 
 			expect(result).toEqual(health)
-			expect(appService.health).toHaveBeenCalledTimes(1)
+			expect(healthService.health).toHaveBeenCalledTimes(1)
 		})
 	})
 })
