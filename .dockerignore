@@ -16,3 +16,6 @@ coverage*
 .husky
 /pgadmin
 /pgdata
+.DS_Store
+biome.json
+commitlint.config.mjs

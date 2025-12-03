@@ -1,5 +1,3 @@
-# use the official Bun image
-# see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM node:22.21.1 AS base
 
 WORKDIR /usr/src/app
@@ -39,9 +37,14 @@ COPY --from=prerelease /usr/src/app/dist dist
 CMD ["node", "dist/main"]
 
 # test Stage
-FROM base AS test
-COPY --from=install /temp/dev/node_modules node_modules
-COPY --from=install /temp/dev/yarn.lock .
-COPY . .
+FROM node:22.21.1-slim AS test
 
-CMD ["yarn", "test:cov"]
+WORKDIR /usr/src/app
+
+COPY src src
+COPY package.json jest-e2e.json tsconfig.json .
+
+RUN yarn install --frozen-lockfile
+
+# run the tests
+ENTRYPOINT ["yarn", "jest", "--coverage"]
