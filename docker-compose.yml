@@ -21,20 +21,19 @@ services:
       retries: 3
       start_period: 30s
 
-  app:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
       target: prerelease
-    image: nestjs-docker:latest
-    container_name: nestjs-starter-app
+    image: nestjs-starter-api:latest
+    container_name: nestjs-starter-api
     env_file:
       - .env
     ports:
       - '${PORT}:${PORT}'
     volumes:
-      - ./src:/usr/src/app/src
-      - ./node_modules:/usr/src/app/node_modules
+      - .:/usr/src/app
     networks:
       - nestjs-starter-network
     depends_on:
@@ -67,14 +66,21 @@ services:
   # Test Service
   # ========================================
 
-  app-test:
+  api-test:
     build:
       context: .
       dockerfile: Dockerfile
       target: test
-    container_name: nestjs-starter-app-test
+    container_name: nestjs-starter-api-test
+    env_file:
+      - .env
     environment:
       - NODE_ENV=test
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./node_modules:/usr/src/app/node_modules
+      - ./coverage:/usr/src/app/coverage
+    command: yarn jest
     networks:
       - nestjs-starter-network
     depends_on:
