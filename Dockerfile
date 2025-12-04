@@ -21,9 +21,7 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY --from=install /temp/dev/yarn.lock .
 COPY . .
 
-# run the app
-ENTRYPOINT [ "yarn", "start:dev" ]
-
+# build the application
 RUN yarn build
 
 # copy production dependencies and source code into final image
@@ -42,9 +40,10 @@ FROM node:22.21.1-slim AS test
 WORKDIR /usr/src/app
 
 COPY src src
-COPY package.json jest-e2e.json tsconfig.json .
+COPY test test
+COPY package.json tsconfig.json .
 
 RUN yarn install --frozen-lockfile
 
 # run the tests
-ENTRYPOINT ["yarn", "jest", "--coverage"]
+CMD ["yarn", "run", "test:cov"]

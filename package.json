@@ -18,8 +18,11 @@
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"test:e2e": "jest --config ./jest-e2e.json",
-		"test:staged": "docker compose run --rm api-test yarn jest .",
+		"test:e2e": "jest --config ./test/jest-e2e.json",
+		"docker:up": "docker compose up -d",
+		"docker:down": "docker compose down",
+		"docker:logs": "docker compose logs -f",
+		"docker:build": "docker compose build",
 		"prepare": "husky || true",
 		"commit": "cz"
 	},
@@ -29,8 +32,8 @@
 			"biome format --write --no-errors-on-unmatched",
 			"biome check --write --no-errors-on-unmatched"
 		],
-		"**/*.spec.ts": [
-			"yarn test:staged"
+		"!(test/**)/**/*.spec.ts": [
+			"yarn run test"
 		]
 	},
 	"dependencies": {
