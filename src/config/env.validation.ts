@@ -3,6 +3,7 @@ import {
 	IsEnum,
 	IsNotEmpty,
 	IsNumber,
+	IsString,
 	Max,
 	Min,
 	validateSync
@@ -23,6 +24,24 @@ class EnvironmentVariables {
 	@Max(65535)
 	@IsNotEmpty()
 	PORT: number
+
+	@IsNumber()
+	@Min(0)
+	@Max(65535)
+	@IsNotEmpty()
+	DATABASE_PORT: number
+
+	@IsString()
+	@IsNotEmpty()
+	DATABASE_USER: string
+
+	@IsString()
+	@IsNotEmpty()
+	DATABASE_PASSWORD: string
+
+	@IsString()
+	@IsNotEmpty()
+	DATABASE_NAME: string
 }
 
 export const validate = (config: Record<string, unknown>) => {
