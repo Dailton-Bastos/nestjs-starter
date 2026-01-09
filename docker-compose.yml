@@ -21,28 +21,52 @@ services:
       retries: 3
       start_period: 30s
 
-  api:
+  app-dev:
     build:
       context: .
       dockerfile: Dockerfile
       target: prerelease
-    image: nestjs-starter-api:latest
-    container_name: nestjs-starter-api
-    env_file:
-      - .env
+    image: nestjs-starter-app-dev:latest
+    container_name: nestjs-starter-app-dev
     ports:
-      - '${PORT}:${PORT}'
+      - '${PORT}:3000'
+    env_file:
+      - .env.development.local
     volumes:
-      - ./src:/usr/src/app/src
-      - ./node_modules:/usr/src/app/node_modules
-    command: yarn start:dev
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - nestjs-starter-network
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:${PORT}/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})\""]
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:${PORT}/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})\""]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: nestjs-starter-app-prod:latest
+    container_name: nestjs-starter-app-prod
+    ports:
+      - '${PORT}:3001'
+    env_file:
+      - .env.production.local
+    profiles:
+      - production
+    networks:
+      - nestjs-starter-network
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:${PORT}/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})\""]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -53,7 +77,7 @@ services:
     container_name: nestjs-starter-pgadmin
     restart: always
     ports:
-      - '${PGADMIN_HOST_PORT}:${PGADMIN_CONTAINER_PORT}'
+      - '${PGADMIN_HOST_PORT}:80'
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
@@ -68,24 +92,19 @@ services:
   # Test Service
   # ========================================
 
-  api-test:
+  app-test:
     build:
       context: .
       dockerfile: Dockerfile
       target: test
-    container_name: nestjs-starter-api-test
+    image: nestjs-starter-app-test:latest
+    container_name: nestjs-starter-app-test
     env_file:
-      - .env
-    environment:
-      - NODE_ENV=test
+      - .env.test.local
     volumes:
-      - ./src:/usr/src/app/src
-      - ./node_modules:/usr/src/app/node_modules
-      - ./coverage:/usr/src/app/coverage
-      - ./tsconfig.json:/usr/src/app/tsconfig.json
-      - ./tsconfig.build.json:/usr/src/app/tsconfig.build.json
-      - ./nest-cli.json:/usr/src/app/nest-cli.json
-      - ./test:/usr/src/app/test
+     - ./.env.test.local:/usr/src/app/.env.test.local
+    profiles:
+      - test
     networks:
       - nestjs-starter-network
     depends_on:
