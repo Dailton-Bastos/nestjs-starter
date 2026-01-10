@@ -32,12 +32,13 @@ services:
       - '${PORT}:3000'
     env_file:
       - .env.development.local
+    profiles:
+      - development
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     networks:
       - nestjs-starter-network
-    # entrypoint: ["/bin/zsh", "-c", "yarn run start:dev"]
     depends_on:
       db:
         condition: service_healthy
