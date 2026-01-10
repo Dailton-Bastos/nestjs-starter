@@ -17,6 +17,12 @@ RUN cd /temp/prod && yarn install --frozen-lockfile --production
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
+
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.1/zsh-in-docker.sh)" -- \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-syntax-highlighting \
+    -p https://github.com/zsh-users/zsh-completions
+
 COPY --from=install /temp/dev/node_modules ./node_modules
 COPY --from=install /temp/dev/yarn.lock .
 COPY . .
