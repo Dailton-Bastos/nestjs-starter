@@ -36,7 +36,7 @@ services:
       - development
     volumes:
       - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - node_modules:/usr/src/app/node_modules
     networks:
       - nestjs-starter-network
     depends_on:
@@ -117,3 +117,6 @@ networks:
   nestjs-starter-network:
     driver: bridge
     name: nestjs-starter-network
+
+volumes:
+  node_modules:

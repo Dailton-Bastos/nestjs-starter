@@ -20,10 +20,10 @@
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
 		"test:e2e": "env-cmd -f .env.test.local -- jest --config ./test/jest-e2e.json --maxWorkers=1",
 		"docker:up": "docker compose --env-file .env.development.local --profile development up -d",
-		"docker:down": "docker compose --env-file .env.development.local --profile development down",
+		"docker:down": "docker compose --env-file .env.development.local --profile development down -v",
 		"docker:exec": "docker compose --env-file .env.development.local exec app-dev /bin/zsh",
-		"docker:logs": "docker compose logs -f",
-		"docker:build": "docker compose build",
+		"docker:logs": "docker compose --env-file .env.development.local --profile development logs -f",
+		"docker:build": "docker compose --env-file .env.development.local --profile development build",
 		"prepare": "husky || true",
 		"commit": "cz"
 	},
